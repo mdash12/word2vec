@@ -1,9 +1,10 @@
-1. Implement batch generation
-2. Implement Cross Entropy Loss 
-3. Implement NCE Loss
-4. Try different parameters to train your word2vec model
-5. Write a code to evaluate relations between word pairs
-6. Find the least illustrative pair and most illustrative pair among four pairs of words.
+Sub tasks:
+  1. Implement batch generation
+  2. Implement Cross Entropy Loss 
+  3. Implement NCE Loss
+  4. Try different parameters to train your word2vec model
+  5. Write a code to evaluate relations between word pairs
+  6. Find the least illustrative pair and most illustrative pair among four pairs of words.
 
 
 1. In this assignment, you will be asked to:

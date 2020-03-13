@@ -1,0 +1,99 @@
+==========================================================================================
+
+         Introduction to Natural Laguage Processing Assignment 1
+ 
+==========================================================================================
+
+Model: https://drive.google.com/open?id=1efsOf2n1eOGos3Msu6m7_9cg15AoSowe
+
+Model configuration:
+
+Cross entropy: 
+
+Learning Rate: 0.5
+Batch size: 256
+Skip window: 2
+Num skips: 4
+num_sampled: 64
+max_num_steps: 75000
+
+
+NCE:
+
+Learning Rate: 1
+Batch size: 128
+Skip window: 4
+Num skips: 4
+num_sampled: 64
+max_num_steps: 75000
+
+
+1. Generating batch
+  You will generate small subset of training data, which is called batch.
+
+  For skip-gram model, you will slide a window
+  and sample training instances from the data insdie the window.
+
+==========================================================================================
+
+  For generating a batch from the data, we start from the the data_index position.
+  If data_index position is zero, set it to skip_window and start generating pairs.
+
+  Outer loop:
+  We will iterate till the whole batch is generated.
+  For each context word, we can take at max num_skips target words. And this target words will
+  be generated within a skip window, so we iterate over the skip window till we have generated
+  num_skips context, target pairs.
+
+  Inner loop:
+  The context, target pair generation starts from the nearest left and right words of the context
+  word to the farthest target words on either side of the context word within the skip window or
+  till the num_skips pairs are generated.
+
+  Break condition:
+  Outer: batch size reached
+  Inner: Either the num_skips pairs taken from the window/batch size reached
+
+  The data_index global variable is incremented every time after we have taken the required num_skips words
+  around a context word.  This ensures that next time batch generation is called, it produces a new batch.
+
+
+2.a. Cross entropy:
+
+  Cross entropy is calculated by taking the difference of two terms:
+  a. log of exp(similarity of u_o and v_c)
+  b. log of exp(similarity of v_c and each target word in the batch
+
+  To calculate a. we can take tf.multiply of inputs and true_w so that each row will give the dot product of v_c and
+  corresponding u_c. We need to do reduce_sum to calculate the term for batch_size,1
+
+  To calculate b. we take the matrix multiplication to get the similarity of v_c with each target word and reduce sum
+  to get each row as sum over similarity of one v_c over all target words.
+
+
+2.b. Noise Contrastive Estimation:
+
+   While calculating the loss function in cross entropy, we normalize over all the vocabulary.
+   Instead we take k negative samples. The first term calculates the context, target probability and
+   the second term calculates the probability of the context word and noise distribution over k samples.
+
+
+3. Analogies using word vectors
+
+  You will use the word vectors you learned from both approaches(cross entropy and NCE) in the following word analogy task.
+
+  Q1. Which word pairs has the MOST illustrative(similar) example of the relation R?
+  Q2. Which word pairs has the LEAST illustrative(similar) example of the relation R?
+  -------------------------------------------------------------------------------------
+
+  To calculate the most illustrative and least illustrative pair, we can take the embeddings from out trained model.
+
+  We first read the word_analogy_dev.txt, parse it to get the set of examples and choices.
+
+  Over the choices, we calculate difference of each pair and take their average to get the relation embedding.
+
+  Then over each choice pair, we calculate the difference of the pair and take the cosine similarity with the
+  relation embedding.
+
+  The maximum cosine similarity gives the most illustrative pair and minimum cosine similarity gives the least illustrative
+  pair.
